@@ -1,15 +1,10 @@
-import os
 import requests
 import pandas as pd
 import urllib3
 import streamlit as st
-from dotenv import load_dotenv
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-# Load environment variables
-load_dotenv()
 
 # OAuth URL for Strava
 auth_url = "https://www.strava.com/oauth/token"
@@ -19,9 +14,9 @@ def reauthorize():
     Use the refresh token to get the latest access token.
     """
     payload = {
-        'client_id': os.getenv('STRAVA_CLIENT_ID'),  # Get from environment variables
-        'client_secret': os.getenv('STRAVA_CLIENT_SECRET'),  # Get from environment variables
-        'refresh_token': os.getenv('STRAVA_REFRESH_TOKEN'),  # Get from environment variables
+        'client_id': st.secrets["STRAVA_CLIENT_ID"],  # Get from Streamlit secrets
+        'client_secret': st.secrets["STRAVA_CLIENT_SECRET"],  # Get from Streamlit secrets
+        'refresh_token': st.secrets["STRAVA_REFRESH_TOKEN"],  # Get from Streamlit secrets
         'grant_type': 'refresh_token',
         'f': 'json'
     }
@@ -106,6 +101,6 @@ if st.button("Rename Latest Activity"):
     access_token = reauthorize()
     if access_token:
         latest_activity_id = get_latest_activity_id(access_token)
+        latest_activity_id = st.secrets['STRAVA_TEST_ACTIVITY_ID']
         if latest_activity_id:
             rename_activity(access_token, latest_activity_id, new_name=new_activity_name)
-
